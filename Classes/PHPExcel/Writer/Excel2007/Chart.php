@@ -1142,7 +1142,20 @@ class PHPExcel_Writer_Excel2007_Chart extends
       }
     }
 
+    //FIXME chart colour hack
+    $ci=-1;
+    $colorNDX=array();
+    $colorNDX[0] = "CC3333";
+    $colorNDX[1] = "999999";
+    $colorNDX[2] = "000000";
+    $colorNDX[3] = "444444";
+    $colorNDX[4] = "555555";
+    $colorNDX[5] = "666666";
+    $colorNDX[6] = "777777";
+    //END FIXME
+
     foreach ($plotSeriesOrder as $plotSeriesIdx => $plotSeriesRef) {
+      $ci++;
       $objWriter->startElement('c:ser');
 
       $objWriter->startElement('c:idx');
@@ -1187,6 +1200,19 @@ class PHPExcel_Writer_Excel2007_Chart extends
         $objWriter->endElement();
       }
 
+      //FIXME chart colour hack part 2
+      if ($groupType !== PHPExcel_Chart_DataSeries::TYPE_LINECHART
+        && $groupType !== PHPExcel_Chart_DataSeries::TYPE_STOCKCHART) {
+          $objWriter->startElement('c:spPr');
+          $objWriter->startElement('a:solidFill');
+          $objWriter->startElement('a:srgbClr');
+          $objWriter->writeAttribute('val',$colorNDX[$ci]);
+          $objWriter->endElement();
+          $objWriter->endElement();
+          $objWriter->endElement();
+        }
+      //END FIXME
+
       //	Formatting for the points
       if (($groupType == PHPExcel_Chart_DataSeries::TYPE_LINECHART) ||
           ($groupType == PHPExcel_Chart_DataSeries::TYPE_STOCKCHART)
@@ -1198,6 +1224,13 @@ class PHPExcel_Writer_Excel2007_Chart extends
           $objWriter->startElement('a:noFill');
           $objWriter->endElement();
         }
+        //FIXME chart colour hack part 3
+        $objWriter->startElement('a:solidFill');
+        $objWriter->startElement('a:srgbClr');
+        $objWriter->writeAttribute('val',$colorNDX[$ci]);
+        $objWriter->endElement();
+        $objWriter->endElement();
+        //END FIXME
         $objWriter->endElement();
         $objWriter->endElement();
       }
